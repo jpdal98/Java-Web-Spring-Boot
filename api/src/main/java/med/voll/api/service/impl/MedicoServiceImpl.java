@@ -25,6 +25,10 @@ public class MedicoServiceImpl implements MedicoService {
     @Transactional
     public ResponseEntity<?> cadastrar(DadosCadastroMedicoDTO dados) {
         try{
+            if(repository.existsByNome(dados.nome())){
+                return ResponseEntity.status(HttpStatus.OK).body("Este medico já foi cadastrado");
+            }
+
             if(dados == null){
                 return ResponseEntity.status(HttpStatus.OK).body("Os dados não foram passados");
             }

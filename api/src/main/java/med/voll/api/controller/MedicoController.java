@@ -6,6 +6,7 @@ import med.voll.api.service.MedicoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,8 @@ public class MedicoController {
     }
 
     @GetMapping(value="/buscarMedicos")
-    public ResponseEntity<Page<?>> buscarMedicos(Pageable paginacao) {
+    public ResponseEntity<Page<?>> buscarMedicos(@PageableDefault(size = 10, page = 0, sort = {"nome"})
+                                                     Pageable paginacao) {
         return ResponseEntity.status(HttpStatus.OK).body(service.buscarMedicos(paginacao).getBody());
     }
 
