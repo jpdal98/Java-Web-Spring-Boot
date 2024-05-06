@@ -3,6 +3,7 @@ package med.voll.api.domain.model;
 import jakarta.persistence.*;
 import lombok.*;
 import med.voll.api.domain.dto.DadosCadastroMedicoDTO;
+import med.voll.api.domain.dto.DadosEditarMedicoDTO;
 import med.voll.api.domain.enums.Especialidade;
 
 @Table(name = "medicos")
@@ -35,5 +36,16 @@ public class Medico {
         this.telefone = dados.telefone();
         this.especialidade = dados.especialidade();
         this.endereco = new Endereco(dados.endereco());
+    }
+    public void atualizarInformacoes(DadosEditarMedicoDTO dados) {
+        if (dados.nome() != null) {
+            this.nome = dados.nome();
+        }
+        if (dados.telefone() != null) {
+            this.telefone = dados.telefone();
+        }
+        if (dados.endereco() != null) {
+            this.endereco.atualizarInformacoes(dados.endereco());
+        }
     }
 }

@@ -1,6 +1,7 @@
 package med.voll.api.service.impl;
 
 import med.voll.api.domain.dto.DadosCadastroMedicoDTO;
+import med.voll.api.domain.dto.DadosEditarMedicoDTO;
 import med.voll.api.domain.model.Medico;
 import med.voll.api.repository.MedicoRepository;
 import med.voll.api.service.MedicoService;
@@ -45,6 +46,27 @@ public class MedicoServiceImpl implements MedicoService {
     public ResponseEntity<Page<?>> buscarMedicos(Pageable paginacao) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(repository.findAll(paginacao));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> editar(DadosEditarMedicoDTO dados) {
+        try{
+            if(!repository.existsById(dados.id())){
+                return ResponseEntity.status(HttpStatus.OK).body("Este medico não existe!");
+            }
+
+            if(dados == null){
+                return ResponseEntity.status(HttpStatus.OK).body("Os dados não foram passados");
+            }
+
+            var medico = repository.getReferenceById(dados.id());
+            medico.atualizarInformacoes(dados);
+
+            return ResponseEntity.status(HttpStatus.OK).body("Cadastro realizado com sucesso!");
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

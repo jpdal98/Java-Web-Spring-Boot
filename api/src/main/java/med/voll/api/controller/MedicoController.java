@@ -2,6 +2,7 @@ package med.voll.api.controller;
 
 import jakarta.validation.Valid;
 import med.voll.api.domain.dto.DadosCadastroMedicoDTO;
+import med.voll.api.domain.dto.DadosEditarMedicoDTO;
 import med.voll.api.service.MedicoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,4 +32,8 @@ public class MedicoController {
         return ResponseEntity.status(HttpStatus.OK).body(service.buscarMedicos(paginacao).getBody());
     }
 
+    @PutMapping(value="/atualizar")
+    public ResponseEntity<?> atualizar(@RequestBody @Valid DadosEditarMedicoDTO dados){
+        return ResponseEntity.status(HttpStatus.OK).body(service.editar(dados));
+    }
 }
