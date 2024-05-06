@@ -2,6 +2,7 @@ package med.voll.api.service.impl;
 
 import med.voll.api.domain.dto.DadosCadastroMedicoDTO;
 import med.voll.api.domain.dto.DadosEditarMedicoDTO;
+import med.voll.api.domain.model.Endereco;
 import med.voll.api.domain.model.Medico;
 import med.voll.api.repository.MedicoRepository;
 import med.voll.api.service.MedicoService;
@@ -64,7 +65,9 @@ public class MedicoServiceImpl implements MedicoService {
             }
 
             var medico = repository.getReferenceById(dados.id());
-            medico.atualizarInformacoes(dados);
+            medico.setNome(dados.nome());
+            medico.setTelefone(dados.telefone());
+            medico.setEndereco(new Endereco(dados.endereco()));
 
             return ResponseEntity.status(HttpStatus.OK).body("Cadastro realizado com sucesso!");
         }catch (Exception e){
