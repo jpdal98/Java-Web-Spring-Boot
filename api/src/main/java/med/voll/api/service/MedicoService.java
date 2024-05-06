@@ -5,9 +5,6 @@ import med.voll.api.domain.dto.DadosEditarMedicoDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
-
-import java.util.List;
 
 public interface MedicoService {
     ResponseEntity<?> cadastrar(DadosCadastroMedicoDTO dados);
@@ -15,4 +12,8 @@ public interface MedicoService {
     ResponseEntity<Page<?>> buscarMedicos(Pageable paginacao);
 
     ResponseEntity<?> editar(DadosEditarMedicoDTO dados);
+
+    ResponseEntity<?> excluir(Long id);
+
+    ResponseEntity<?> desativar(Long id);
 }

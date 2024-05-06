@@ -12,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping(value="medicos")
 public class MedicoController {
@@ -35,5 +33,15 @@ public class MedicoController {
     @PutMapping(value="/atualizar")
     public ResponseEntity<?> atualizar(@RequestBody @Valid DadosEditarMedicoDTO dados){
         return ResponseEntity.status(HttpStatus.OK).body(service.editar(dados));
+    }
+
+    @DeleteMapping(value="/excluir/{id}")
+    public ResponseEntity<?> excluir(@PathVariable Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(service.excluir(id));
+    }
+
+    @PutMapping(value="/desativar/{id}")
+    public ResponseEntity<?> desativar(@PathVariable Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(service.desativar(id));
     }
 }

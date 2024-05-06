@@ -14,9 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-
 @Service
 public class MedicoServiceImpl implements MedicoService {
 
@@ -46,7 +43,7 @@ public class MedicoServiceImpl implements MedicoService {
     @Transactional(readOnly = true)
     public ResponseEntity<Page<?>> buscarMedicos(Pageable paginacao) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(repository.findAll(paginacao));
+            return ResponseEntity.status(HttpStatus.OK).body(repository.findAllByAtivoTrue(paginacao));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -70,6 +67,38 @@ public class MedicoServiceImpl implements MedicoService {
             medico.setEndereco(new Endereco(dados.endereco()));
 
             return ResponseEntity.status(HttpStatus.OK).body("Cadastro realizado com sucesso!");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> excluir(Long id) {
+        try {
+            if(!repository.existsById(id)){
+                return ResponseEntity.status(HttpStatus.OK).body("Este medico não existe!");
+            }
+
+            repository.deleteById(id);
+
+            return ResponseEntity.status(HttpStatus.OK).body("Medico excluido com sucesso!");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> desativar(Long id) {
+        try{
+            if(!repository.existsById(id)){
+                return ResponseEntity.status(HttpStatus.OK).body("Este medico não existe!");
+            }
+
+            var medico = repository.getReferenceById(id);
+            medico.setAtivo(false);
+
+            return ResponseEntity.status(HttpStatus.OK).body("Conta desativada com sucesso!");
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

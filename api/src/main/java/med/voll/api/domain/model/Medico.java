@@ -3,7 +3,6 @@ package med.voll.api.domain.model;
 import jakarta.persistence.*;
 import lombok.*;
 import med.voll.api.domain.dto.DadosCadastroMedicoDTO;
-import med.voll.api.domain.dto.DadosEditarMedicoDTO;
 import med.voll.api.domain.enums.Especialidade;
 
 @Table(name = "medicos")
@@ -22,6 +21,7 @@ public class Medico {
     private String email;
     private String crm;
     private String telefone;
+    private boolean ativo;
 
     @Enumerated(EnumType.STRING)
     private Especialidade especialidade;
@@ -34,6 +34,7 @@ public class Medico {
         this.email = dados.email();
         this.crm = dados.crm();
         this.telefone = dados.telefone();
+        this.ativo = true;
         this.especialidade = dados.especialidade();
         this.endereco = new Endereco(dados.endereco());
     }
