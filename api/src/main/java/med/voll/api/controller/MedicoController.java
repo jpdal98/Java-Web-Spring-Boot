@@ -6,20 +6,25 @@ import med.voll.api.service.MedicoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("medicos")
+@RequestMapping(value="medicos")
 public class MedicoController {
 
     @Autowired
     private MedicoService service;
 
-    @PostMapping("/cadastrar")
+    @PostMapping(value="/cadastrar")
     public ResponseEntity<?> cadastrar(@RequestBody @Valid DadosCadastroMedicoDTO dados){
         return ResponseEntity.status(HttpStatus.OK).body(service.cadastrar(dados));
     }
+
+    @GetMapping(value="/buscarMedicos")
+    public ResponseEntity<List<?>> buscarMedicos() {
+        return ResponseEntity.status(HttpStatus.OK).body(service.buscarMedicos().getBody());
+    }
+
 }

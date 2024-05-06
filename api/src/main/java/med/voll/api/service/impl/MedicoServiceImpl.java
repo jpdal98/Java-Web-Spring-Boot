@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class MedicoServiceImpl implements MedicoService {
@@ -16,6 +19,7 @@ public class MedicoServiceImpl implements MedicoService {
     private MedicoRepository repository;
 
     @Override
+    @Transactional
     public ResponseEntity<?> cadastrar(DadosCadastroMedicoDTO dados) {
         try{
             if(dados == null){
@@ -23,10 +27,19 @@ public class MedicoServiceImpl implements MedicoService {
             }
 
             repository.save(new Medico(dados));
-
+            return ResponseEntity.status(HttpStatus.OK).body("Cadastro realizado com sucesso!");
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<List<?>> buscarMedicos() {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(repository.findAll());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
