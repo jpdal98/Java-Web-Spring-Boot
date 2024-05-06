@@ -5,11 +5,14 @@ import med.voll.api.domain.model.Medico;
 import med.voll.api.repository.MedicoRepository;
 import med.voll.api.service.MedicoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -35,9 +38,9 @@ public class MedicoServiceImpl implements MedicoService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<List<?>> buscarMedicos() {
+    public ResponseEntity<Page<?>> buscarMedicos(Pageable paginacao) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(repository.findAll());
+            return ResponseEntity.status(HttpStatus.OK).body(repository.findAll(paginacao));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
