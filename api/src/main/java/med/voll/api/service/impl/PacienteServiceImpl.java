@@ -1,11 +1,11 @@
 package med.voll.api.service.impl;
 
-import med.voll.api.domain.dto.medico.DadosCadastroMedicoDTO;
-import med.voll.api.domain.dto.medico.DadosEditarMedicoDTO;
+import med.voll.api.domain.dto.paciente.DadosCadastroPacienteDTO;
+import med.voll.api.domain.dto.paciente.DadosEditarPacienteDTO;
 import med.voll.api.domain.model.Endereco;
-import med.voll.api.domain.model.Medico;
-import med.voll.api.repository.MedicoRepository;
-import med.voll.api.service.MedicoService;
+import med.voll.api.domain.model.Paciente;
+import med.voll.api.repository.PacienteRepository;
+import med.voll.api.service.PacienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,24 +15,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class MedicoServiceImpl implements MedicoService {
-
+public class PacienteServiceImpl implements PacienteService {
     @Autowired
-    private MedicoRepository repository;
+    private PacienteRepository repository;
 
     @Override
     @Transactional
-    public ResponseEntity<?> cadastrar(DadosCadastroMedicoDTO dados) {
+    public ResponseEntity<?> cadastrar(DadosCadastroPacienteDTO dados) {
         try{
             if(repository.existsByNome(dados.nome())){
-                return ResponseEntity.status(HttpStatus.OK).body("Este medico já foi cadastrado");
+                return ResponseEntity.status(HttpStatus.OK).body("Este paciente já foi cadastrado");
             }
 
             if(dados == null){
                 return ResponseEntity.status(HttpStatus.OK).body("Os dados não foram passados");
             }
 
-            repository.save(new Medico(dados));
+            repository.save(new Paciente(dados));
             return ResponseEntity.status(HttpStatus.OK).body("Cadastro realizado com sucesso!");
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -41,7 +40,7 @@ public class MedicoServiceImpl implements MedicoService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<Page<?>> buscarMedicos(Pageable paginacao) {
+    public ResponseEntity<Page<?>> buscarPacientes(Pageable paginacao) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(repository.findAllByAtivoTrue(paginacao));
         }catch (Exception e){
@@ -51,20 +50,20 @@ public class MedicoServiceImpl implements MedicoService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> editar(DadosEditarMedicoDTO dados) {
+    public ResponseEntity<?> editar(DadosEditarPacienteDTO dados) {
         try{
             if(!repository.existsById(dados.id())){
-                return ResponseEntity.status(HttpStatus.OK).body("Este medico não existe!");
+                return ResponseEntity.status(HttpStatus.OK).body("Este paciente não existe!");
             }
 
             if(dados == null){
                 return ResponseEntity.status(HttpStatus.OK).body("Os dados não foram passados");
             }
 
-            var medico = repository.getReferenceById(dados.id());
-            medico.setNome(dados.nome());
-            medico.setTelefone(dados.telefone());
-            medico.setEndereco(new Endereco(dados.endereco()));
+            var paciente = repository.getReferenceById(dados.id());
+            paciente.setNome(dados.nome());
+            paciente.setTelefone(dados.telefone());
+            paciente.setEndereco(new Endereco(dados.endereco()));
 
             return ResponseEntity.status(HttpStatus.OK).body("Dados atualizados com sucesso!");
         }catch (Exception e){
@@ -77,12 +76,12 @@ public class MedicoServiceImpl implements MedicoService {
     public ResponseEntity<?> excluir(Long id) {
         try {
             if(!repository.existsById(id)){
-                return ResponseEntity.status(HttpStatus.OK).body("Este medico não existe!");
+                return ResponseEntity.status(HttpStatus.OK).body("Este paciente não existe!");
             }
 
             repository.deleteById(id);
 
-            return ResponseEntity.status(HttpStatus.OK).body("Medico excluido com sucesso!");
+            return ResponseEntity.status(HttpStatus.OK).body("Paciente excluido com sucesso!");
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -92,7 +91,7 @@ public class MedicoServiceImpl implements MedicoService {
     public ResponseEntity<?> desativar(Long id) {
         try{
             if(!repository.existsById(id)){
-                return ResponseEntity.status(HttpStatus.OK).body("Este medico não existe!");
+                return ResponseEntity.status(HttpStatus.OK).body("Este paciente não existe!");
             }
 
             var medico = repository.getReferenceById(id);
