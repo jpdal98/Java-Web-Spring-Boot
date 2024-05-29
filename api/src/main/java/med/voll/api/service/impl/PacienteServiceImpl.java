@@ -23,14 +23,6 @@ public class PacienteServiceImpl implements PacienteService {
     @Transactional
     public ResponseEntity<?> cadastrar(DadosCadastroPacienteDTO dados) {
         try{
-            if(repository.existsByNome(dados.nome())){
-                return ResponseEntity.status(HttpStatus.OK).body("Este paciente já foi cadastrado");
-            }
-
-            if(dados == null){
-                return ResponseEntity.status(HttpStatus.OK).body("Os dados não foram passados");
-            }
-
             repository.save(new Paciente(dados));
             return ResponseEntity.status(HttpStatus.OK).body("Cadastro realizado com sucesso!");
         }catch (Exception e){
@@ -52,14 +44,6 @@ public class PacienteServiceImpl implements PacienteService {
     @Transactional
     public ResponseEntity<?> editar(DadosEditarPacienteDTO dados) {
         try{
-            if(!repository.existsById(dados.id())){
-                return ResponseEntity.status(HttpStatus.OK).body("Este paciente não existe!");
-            }
-
-            if(dados == null){
-                return ResponseEntity.status(HttpStatus.OK).body("Os dados não foram passados");
-            }
-
             var paciente = repository.getReferenceById(dados.id());
             paciente.setNome(dados.nome());
             paciente.setTelefone(dados.telefone());
@@ -75,10 +59,6 @@ public class PacienteServiceImpl implements PacienteService {
     @Transactional
     public ResponseEntity<?> excluir(Long id) {
         try {
-            if(!repository.existsById(id)){
-                return ResponseEntity.status(HttpStatus.OK).body("Este paciente não existe!");
-            }
-
             repository.deleteById(id);
 
             return ResponseEntity.status(HttpStatus.OK).body("Paciente excluido com sucesso!");
@@ -90,10 +70,6 @@ public class PacienteServiceImpl implements PacienteService {
     @Override
     public ResponseEntity<?> desativar(Long id) {
         try{
-            if(!repository.existsById(id)){
-                return ResponseEntity.status(HttpStatus.OK).body("Este paciente não existe!");
-            }
-
             var medico = repository.getReferenceById(id);
             medico.setAtivo(false);
 

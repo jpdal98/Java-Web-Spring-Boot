@@ -24,14 +24,6 @@ public class MedicoServiceImpl implements MedicoService {
     @Transactional
     public ResponseEntity<?> cadastrar(DadosCadastroMedicoDTO dados) {
         try{
-            if(repository.existsByNome(dados.nome())){
-                return ResponseEntity.status(HttpStatus.OK).body("Este medico já foi cadastrado");
-            }
-
-            if(dados == null){
-                return ResponseEntity.status(HttpStatus.OK).body("Os dados não foram passados");
-            }
-
             repository.save(new Medico(dados));
             return ResponseEntity.status(HttpStatus.OK).body("Cadastro realizado com sucesso!");
         }catch (Exception e){
@@ -53,14 +45,6 @@ public class MedicoServiceImpl implements MedicoService {
     @Transactional
     public ResponseEntity<?> editar(DadosEditarMedicoDTO dados) {
         try{
-            if(!repository.existsById(dados.id())){
-                return ResponseEntity.status(HttpStatus.OK).body("Este medico não existe!");
-            }
-
-            if(dados == null){
-                return ResponseEntity.status(HttpStatus.OK).body("Os dados não foram passados");
-            }
-
             var medico = repository.getReferenceById(dados.id());
             medico.setNome(dados.nome());
             medico.setTelefone(dados.telefone());
@@ -76,10 +60,6 @@ public class MedicoServiceImpl implements MedicoService {
     @Transactional
     public ResponseEntity<?> excluir(Long id) {
         try {
-            if(!repository.existsById(id)){
-                return ResponseEntity.status(HttpStatus.OK).body("Este medico não existe!");
-            }
-
             repository.deleteById(id);
 
             return ResponseEntity.status(HttpStatus.OK).body("Medico excluido com sucesso!");
@@ -91,10 +71,6 @@ public class MedicoServiceImpl implements MedicoService {
     @Override
     public ResponseEntity<?> desativar(Long id) {
         try{
-            if(!repository.existsById(id)){
-                return ResponseEntity.status(HttpStatus.OK).body("Este medico não existe!");
-            }
-
             var medico = repository.getReferenceById(id);
             medico.setAtivo(false);
 
