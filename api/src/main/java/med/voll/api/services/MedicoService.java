@@ -1,7 +1,7 @@
-package med.voll.api.service;
+package med.voll.api.services;
 
-import med.voll.api.domain.dto.medico.DadosCadastroMedicoDTO;
-import med.voll.api.domain.dto.medico.DadosEditarMedicoDTO;
+import med.voll.api.domain.dtos.medico.DadosCadastroMedicoDTO;
+import med.voll.api.domain.dtos.medico.DadosEditarMedicoDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;

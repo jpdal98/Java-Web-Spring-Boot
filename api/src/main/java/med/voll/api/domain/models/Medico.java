@@ -1,8 +1,8 @@
-package med.voll.api.domain.model;
+package med.voll.api.domain.models;
 
 import jakarta.persistence.*;
 import lombok.*;
-import med.voll.api.domain.dto.medico.DadosCadastroMedicoDTO;
+import med.voll.api.domain.dtos.medico.DadosCadastroMedicoDTO;
 import med.voll.api.domain.enums.Especialidade;
 
 @Table(name = "medicos")

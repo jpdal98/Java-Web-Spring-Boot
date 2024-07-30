@@ -1,11 +1,11 @@
-package med.voll.api.service.impl;
+package med.voll.api.services.impl;
 
-import med.voll.api.domain.dto.paciente.DadosCadastroPacienteDTO;
-import med.voll.api.domain.dto.paciente.DadosEditarPacienteDTO;
-import med.voll.api.domain.model.Endereco;
-import med.voll.api.domain.model.Paciente;
-import med.voll.api.repository.PacienteRepository;
-import med.voll.api.service.PacienteService;
+import med.voll.api.domain.dtos.paciente.DadosCadastroPacienteDTO;
+import med.voll.api.domain.dtos.paciente.DadosEditarPacienteDTO;
+import med.voll.api.domain.models.Endereco;
+import med.voll.api.domain.models.Paciente;
+import med.voll.api.repositories.PacienteRepository;
+import med.voll.api.services.PacienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
