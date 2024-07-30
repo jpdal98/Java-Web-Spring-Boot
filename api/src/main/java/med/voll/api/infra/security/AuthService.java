@@ -1,4 +1,4 @@
-package med.voll.api.config;
+package med.voll.api.infra.security;
 
 import med.voll.api.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AutenticacaoService implements UserDetailsService {
+public class AuthService implements UserDetailsService {
 
     @Autowired
     private UsuarioRepository repository;
