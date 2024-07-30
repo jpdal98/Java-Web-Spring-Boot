@@ -2,8 +2,8 @@ package med.voll.api.domain.models;
 
 import jakarta.persistence.*;
 import lombok.*;
-import med.voll.api.domain.dtos.DadosAuthDTO;
-import med.voll.api.domain.dtos.medico.DadosCadastroMedicoDTO;
+import med.voll.api.domain.dtos.usuario.DadosCadastroUsuarioDTO;
+import med.voll.api.domain.enums.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,10 +25,15 @@ public class Usuario implements UserDetails {
     private Long id;
     private String login;
     private String senha;
+    private boolean ativo;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
@@ -61,8 +66,10 @@ public class Usuario implements UserDetails {
         return true;
     }
 
-    public Usuario(DadosAuthDTO dados) {
+    public Usuario(DadosCadastroUsuarioDTO dados) {
         this.login = dados.login();
         this.senha = dados.senha();
+        this.ativo = true;
+        this.role = dados.role();
     }
 }

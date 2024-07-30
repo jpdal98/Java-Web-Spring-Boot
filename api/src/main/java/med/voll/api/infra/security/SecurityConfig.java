@@ -23,8 +23,13 @@ public class SecurityConfig {
                         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .authorizeHttpRequests(req -> {
                             req.requestMatchers("/login").permitAll()
-                                .requestMatchers(HttpMethod.DELETE, "/medicos").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/pacientes").hasRole("ADMIN");
+                                    .requestMatchers(HttpMethod.POST, "/usuarios/cadastrar").permitAll()
+                                    .requestMatchers(HttpMethod.GET, "/usuarios/buscarUsuarios").hasRole("ADMIN")
+                                    .requestMatchers(HttpMethod.DELETE, "/usuarios").hasRole("ADMIN")
+                                    .requestMatchers(HttpMethod.DELETE, "/medicos").hasRole("ADMIN")
+                                    .requestMatchers(HttpMethod.PUT, "/medicos/desativar").hasRole("ADMIN")
+                                    .requestMatchers(HttpMethod.DELETE, "/pacientes").hasRole("ADMIN")
+                                    .requestMatchers(HttpMethod.PUT, "/pacientes/desativar").hasRole("ADMIN");
                             req.anyRequest().authenticated();
                         })
                         .build();
