@@ -24,9 +24,9 @@ import org.springframework.web.cors.CorsConfigurationSource;
 public class SecurityConfig {
 
 
-    private static final String[] PUBLIC = { "/login" };
+    private static final String[] PUBLIC = { "/login", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**"};
 
-    private static final String[] OPERATOR_OR_ADMIN = { "/medicos/**", "/pacientes/**" };
+    private static final String[] USER_OR_ADMIN = { "/medicos/**", "/pacientes/**", "/consultas/**"};
 
     private static final String[] ADMIN = { "/usuarios/**"};
 
@@ -41,7 +41,7 @@ public class SecurityConfig {
                         .authorizeHttpRequests(req -> {
                                     req.requestMatchers(PUBLIC).permitAll()
                                     .requestMatchers(ADMIN).hasRole("ADMIN")
-                                    .requestMatchers(OPERATOR_OR_ADMIN).hasAnyRole("ADMIN", "USER")
+                                    .requestMatchers(USER_OR_ADMIN).hasAnyRole("ADMIN", "USER")
                                     .anyRequest().authenticated();
                         }).cors(cors -> cors.configurationSource(corsConfigurationSource()))
                         .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class).build();

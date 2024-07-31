@@ -3,10 +3,10 @@ package med.voll.api.services.impl;
 import jakarta.persistence.EntityNotFoundException;
 import med.voll.api.domain.dtos.medico.DadosCadastroMedicoDTO;
 import med.voll.api.domain.dtos.medico.DadosEditarMedicoDTO;
-import med.voll.api.domain.models.Endereco;
-import med.voll.api.domain.models.Medico;
+import med.voll.api.domain.entities.Endereco;
+import med.voll.api.domain.entities.Medico;
 import med.voll.api.infra.exception.TratadorDeErros;
-import med.voll.api.repositories.MedicoRepository;
+import med.voll.api.domain.repositories.MedicoRepository;
 import med.voll.api.services.MedicoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -70,7 +70,6 @@ public class MedicoServiceImpl implements MedicoService {
     public ResponseEntity<?> excluir(Long id) {
         try {
             repository.deleteById(id);
-
             return ResponseEntity.status(HttpStatus.OK).body("Medico excluido com sucesso!");
         }catch (EntityNotFoundException e) {
             return new TratadorDeErros().tratarErro404();

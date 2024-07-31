@@ -1,5 +1,6 @@
 package med.voll.api.controllers;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import med.voll.api.domain.dtos.paciente.DadosCadastroPacienteDTO;
 import med.voll.api.domain.dtos.paciente.DadosEditarPacienteDTO;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value="pacientes")
+@SecurityRequirement(name = "bearer-key")
 public class PacienteController {
 
     @Autowired

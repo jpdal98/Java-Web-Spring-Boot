@@ -1,4 +1,4 @@
-package med.voll.api.domain.dtos;
+package med.voll.api.domain.dtos.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
