@@ -1,18 +1,20 @@
 package med.voll.api.services.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import med.voll.api.domain.dtos.usuario.DadosCadastroUsuarioDTO;
 import med.voll.api.domain.dtos.usuario.DadosEditarUsuarioDTO;
-import med.voll.api.domain.models.Endereco;
-import med.voll.api.domain.models.Medico;
 import med.voll.api.domain.models.Usuario;
-import med.voll.api.infra.security.TokenService;
+import med.voll.api.infra.exception.TratadorDeErros;
 import med.voll.api.repositories.UsuarioRepository;
 import med.voll.api.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,17 +25,20 @@ public class UsuarioServiceImpl implements UsuarioService {
     private UsuarioRepository repository;
 
     @Autowired
-    private TokenService service;
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public ResponseEntity<?> cadastrar(DadosCadastroUsuarioDTO dados) {
         try{
-            String senhaAutenticada = service.gerarToken(new Usuario(dados));
-            repository.save(new Usuario(dados)).setSenha(senhaAutenticada);
+            var usuario = new Usuario(dados);
+            usuario.setSenha(passwordEncoder.encode(dados.senha()));
+            repository.save(usuario);
             return ResponseEntity.status(HttpStatus.OK).body("Cadastro realizado com sucesso!");
+        }catch (DataIntegrityViolationException e) {
+            return new TratadorDeErros().tratarErroIntegridadeBD(e);
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return new TratadorDeErros().tratarErro500(e);
         }
     }
 
@@ -43,7 +48,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(repository.findAllByAtivoTrue(paginacao));
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return new TratadorDeErros().tratarErro500(e);
         }
     }
 
@@ -51,13 +56,17 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional
     public ResponseEntity<?> editar(DadosEditarUsuarioDTO dados) {
         try{
-            var usuario = repository.getReferenceById(dados.id());
-            usuario.setSenha(dados.senha());
+            var usuario = repository.getById(dados.id());
             usuario.setLogin(dados.login());
-            usuario.setSenha(service.gerarToken(usuario));
+            usuario.setSenha(passwordEncoder.encode(dados.senha()));
+            usuario.setAtivo(dados.ativo());
             return ResponseEntity.status(HttpStatus.OK).body("Dados atualizados com sucesso!");
+        }catch (EntityNotFoundException e) {
+            return new TratadorDeErros().tratarErro404();
+        }catch (DataIntegrityViolationException e) {
+            return new TratadorDeErros().tratarErroIntegridadeBD(e);
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return new TratadorDeErros().tratarErro500(e);
         }
     }
 
@@ -67,19 +76,28 @@ public class UsuarioServiceImpl implements UsuarioService {
         try {
             repository.deleteById(id);
             return ResponseEntity.status(HttpStatus.OK).body("Usuário excluido com sucesso!");
+        }catch (EntityNotFoundException e) {
+            return new TratadorDeErros().tratarErro404();
+        }catch (DataIntegrityViolationException e) {
+            return new TratadorDeErros().tratarErroIntegridadeBD(e);
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return new TratadorDeErros().tratarErro500(e);
         }
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> desativar(Long id) {
         try{
-            var usuario = repository.getReferenceById(id);
+            var usuario = repository.getById(id);
             usuario.setAtivo(false);
             return ResponseEntity.status(HttpStatus.OK).body("Conta desativada com sucesso!");
+        }catch (EntityNotFoundException e) {
+            return new TratadorDeErros().tratarErro404();
+        }catch (DataIntegrityViolationException e) {
+            return new TratadorDeErros().tratarErroIntegridadeBD(e);
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return new TratadorDeErros().tratarErro500(e);
         }
     }
 }

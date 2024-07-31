@@ -25,7 +25,7 @@ public class UsuarioController {
     }
 
     @GetMapping(value="/buscarUsuarios")
-    public ResponseEntity<Page<?>> buscarUsuarios(@PageableDefault(size = 10, page = 0, sort = {"nome"})
+    public ResponseEntity<Page<?>> buscarUsuarios(@PageableDefault(size = 10, page = 0, sort = {"login"})
                                                  Pageable paginacao) {
         return ResponseEntity.status(HttpStatus.OK).body(service.buscarUsuarios(paginacao).getBody());
     }

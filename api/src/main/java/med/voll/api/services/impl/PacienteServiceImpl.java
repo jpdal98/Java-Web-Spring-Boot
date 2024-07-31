@@ -1,16 +1,20 @@
 package med.voll.api.services.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import med.voll.api.domain.dtos.paciente.DadosCadastroPacienteDTO;
 import med.voll.api.domain.dtos.paciente.DadosEditarPacienteDTO;
 import med.voll.api.domain.models.Endereco;
 import med.voll.api.domain.models.Paciente;
+import med.voll.api.infra.exception.TratadorDeErros;
 import med.voll.api.repositories.PacienteRepository;
 import med.voll.api.services.PacienteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,8 +29,10 @@ public class PacienteServiceImpl implements PacienteService {
         try{
             repository.save(new Paciente(dados));
             return ResponseEntity.status(HttpStatus.OK).body("Cadastro realizado com sucesso!");
+        }catch (DataIntegrityViolationException e) {
+            return new TratadorDeErros().tratarErroIntegridadeBD(e);
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return new TratadorDeErros().tratarErro500(e);
         }
     }
 
@@ -36,7 +42,7 @@ public class PacienteServiceImpl implements PacienteService {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(repository.findAllByAtivoTrue(paginacao));
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return new TratadorDeErros().tratarErro500(e);
         }
     }
 
@@ -44,14 +50,18 @@ public class PacienteServiceImpl implements PacienteService {
     @Transactional
     public ResponseEntity<?> editar(DadosEditarPacienteDTO dados) {
         try{
-            var paciente = repository.getReferenceById(dados.id());
+            var paciente = repository.getById(dados.id());
             paciente.setNome(dados.nome());
             paciente.setTelefone(dados.telefone());
             paciente.setEndereco(new Endereco(dados.endereco()));
 
             return ResponseEntity.status(HttpStatus.OK).body("Dados atualizados com sucesso!");
+        }catch (EntityNotFoundException e) {
+            return new TratadorDeErros().tratarErro404();
+        }catch (DataIntegrityViolationException e) {
+            return new TratadorDeErros().tratarErroIntegridadeBD(e);
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return new TratadorDeErros().tratarErro500(e);
         }
     }
 
@@ -62,20 +72,29 @@ public class PacienteServiceImpl implements PacienteService {
             repository.deleteById(id);
 
             return ResponseEntity.status(HttpStatus.OK).body("Paciente excluido com sucesso!");
+        }catch (EntityNotFoundException e) {
+            return new TratadorDeErros().tratarErro404();
+        }catch (DataIntegrityViolationException e) {
+            return new TratadorDeErros().tratarErroIntegridadeBD(e);
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return new TratadorDeErros().tratarErro500(e);
         }
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> desativar(Long id) {
         try{
-            var medico = repository.getReferenceById(id);
+            var medico = repository.getById(id);
             medico.setAtivo(false);
 
             return ResponseEntity.status(HttpStatus.OK).body("Conta desativada com sucesso!");
+        }catch (EntityNotFoundException e) {
+            return new TratadorDeErros().tratarErro404();
+        }catch (DataIntegrityViolationException e) {
+            return new TratadorDeErros().tratarErroIntegridadeBD(e);
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return new TratadorDeErros().tratarErro500(e);
         }
     }
 }

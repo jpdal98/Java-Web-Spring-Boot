@@ -1,8 +1,8 @@
 package med.voll.api.infra.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,10 +11,27 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+
+    private static final String[] PUBLIC = { "/login" };
+
+    private static final String[] OPERATOR_OR_ADMIN = { "/medicos/**", "/pacientes/**" };
+
+    private static final String[] ADMIN = { "/usuarios/**"};
+
+    @Autowired
+    private SecurityFilter securityFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -22,17 +39,25 @@ public class SecurityConfig {
                 http.csrf(csrf -> csrf.disable())
                         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .authorizeHttpRequests(req -> {
-                            req.requestMatchers("/login").permitAll()
-                                    .requestMatchers(HttpMethod.POST, "/usuarios/cadastrar").permitAll()
-                                    .requestMatchers(HttpMethod.GET, "/usuarios/buscarUsuarios").hasRole("ADMIN")
-                                    .requestMatchers(HttpMethod.DELETE, "/usuarios").hasRole("ADMIN")
-                                    .requestMatchers(HttpMethod.DELETE, "/medicos").hasRole("ADMIN")
-                                    .requestMatchers(HttpMethod.PUT, "/medicos/desativar").hasRole("ADMIN")
-                                    .requestMatchers(HttpMethod.DELETE, "/pacientes").hasRole("ADMIN")
-                                    .requestMatchers(HttpMethod.PUT, "/pacientes/desativar").hasRole("ADMIN");
-                            req.anyRequest().authenticated();
-                        })
-                        .build();
+                                    req.requestMatchers(PUBLIC).permitAll()
+                                    .requestMatchers(ADMIN).hasRole("ADMIN")
+                                    .requestMatchers(OPERATOR_OR_ADMIN).hasAnyRole("ADMIN", "USER")
+                                    .anyRequest().authenticated();
+                        }).cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                        .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class).build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        corsConfig.setAllowedOriginPatterns(Arrays.asList("*"));
+        corsConfig.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "PATCH"));
+        corsConfig.setAllowCredentials(true);
+        corsConfig.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfig);
+        return source;
     }
 
     @Bean

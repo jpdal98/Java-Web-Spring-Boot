@@ -6,5 +6,6 @@ public record DadosEditarUsuarioDTO(
         @NotNull
         Long id,
         String login,
-        String senha) {
+        String senha,
+        boolean ativo) {
 }
